@@ -52,8 +52,8 @@ For a Kubernetes cluster to be resilient it's recommended that it consists of **
 
 ## Choosing a cloud provider
 
-![Terraform](assets/terraform.png) [`provider/digitalocean`](https://github.com/hobby-kube/provisioning/blob/master/provider/digitalocean)
-![Terraform](assets/terraform.png) [`provider/scaleway`](https://github.com/hobby-kube/provisioning/blob/master/provider/scaleway)
+![Terraform](assets/terraform.png) [`provider/digitalocean`](https://github.com/hobby-kube/provisioning/tree/master/provider/digitalocean)
+![Terraform](assets/terraform.png) [`provider/scaleway`](https://github.com/hobby-kube/provisioning/tree/master/provider/scaleway)
 
 At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offer at this time is definitely [Scaleway](https://www.scaleway.com/) where one gets a three node cluster up and running with enough memory (3x2GB) for **less than €10/month**. Unfortunately, Scaleway has currently only two data centers located in Paris and Amsterdam.
 
@@ -77,7 +77,7 @@ This is a tough one. Almost every single guide fails to bring the security topic
 
 ### Firewall
 
-![Terraform](assets/terraform.png) [`security/ufw`](https://github.com/hobby-kube/provisioning/blob/master/security/ufw)
+![Terraform](assets/terraform.png) [`security/ufw`](https://github.com/hobby-kube/provisioning/tree/master/security/ufw)
 
 While there are definitely some people out there able to configure *iptables* reliably, the average mortal will cringe when glancing at the syntax of the most basic rules. Luckily, there are more approachable solutions out there. One of those is [UFW](https://help.ubuntu.com/community/UFW), *the uncomplicated firewall*—a human friendly command line interface offering simple abstractions for managing complex *iptables* rules.
 
@@ -111,7 +111,7 @@ A project called [WireGuard](https://www.WireGuard.io/) supplies the best of bot
 
 ### WireGuard setup
 
-![Terraform](assets/terraform.png) [`security/wireguard`](https://github.com/hobby-kube/provisioning/blob/master/security/wireguard)
+![Terraform](assets/terraform.png) [`security/wireguard`](https://github.com/hobby-kube/provisioning/tree/master/security/wireguard)
 
 As mentioned above, WireGuard runs as a Kernel module and needs to be compiled against the headers of the Kernel running on the host. In most cases it's enough to follow the simple instructions found here: [WireGuard Installation](https://www.WireGuard.io/install/).
 
@@ -214,7 +214,7 @@ Executing `systemctl enable wireguard@wg0.service` will launch the service whene
 
 ## Installing Kubernetes
 
-![Terraform](assets/terraform.png) [`service/kubernetes`](https://github.com/hobby-kube/provisioning/blob/master/service/kubernetes)
+![Terraform](assets/terraform.png) [`service/kubernetes`](https://github.com/hobby-kube/provisioning/tree/master/service/kubernetes)
 
 There are plenty of ways to set up a Kubernetes cluster from scratch. At this point however, we settle on [kubeadm](https://kubernetes.io/docs/getting-started-guides/kubeadm/). This dramatically simplifies the setup process by automating the creation of certificates, services and configuration files.
 
@@ -235,7 +235,7 @@ If this file has been placed after Docker was installed, make sure to restart th
 
 ### Etcd setup
 
-![Terraform](assets/terraform.png) [`service/etcd`](https://github.com/hobby-kube/provisioning/blob/master/service/etcd)
+![Terraform](assets/terraform.png) [`service/etcd`](https://github.com/hobby-kube/provisioning/tree/master/service/etcd)
 
 [etcd](https://coreos.com/etcd/docs/latest/) is a highly-available key value store, which Kubernetes uses for persistent storage of all of its REST API objects. It is therefore a crucial part of the cluster. kubeadm would normally install etcd on a single node. Depending on the number of hosts available, it would be rather stupid not to run etcd in cluster mode. As mentioned earlier, it makes sense to run at least a three node cluster due to the fact that etcd is fault tolerant only from this size on.
 
@@ -372,7 +372,7 @@ That's it, a Kubernetes cluster is ready at our disposal.
 
 ## Access and operations
 
-![Terraform](assets/terraform.png) [`service/kubernetes`](https://github.com/hobby-kube/provisioning/blob/master/service/kubernetes)
+![Terraform](assets/terraform.png) [`service/kubernetes`](https://github.com/hobby-kube/provisioning/tree/master/service/kubernetes)
 
 As soon as the cluster is running, we want to be able to access the Kubernetes API remotely. This can be done by copying `/etc/kubernetes/admin.conf` from kube1 to your own machine. After [installing kubectl](https://kubernetes.io/docs/tasks/kubectl/install/) locally, execute the following commands:
 
@@ -486,7 +486,7 @@ The NGINX ingress controller is quite flexible and supports a whole bunch of [co
 
 ### DNS records
 
-![Terraform](assets/terraform.png) [`dns/cloudflare`](https://github.com/hobby-kube/provisioning/blob/master/dns/cloudflare)
+![Terraform](assets/terraform.png) [`dns/cloudflare`](https://github.com/hobby-kube/provisioning/tree/master/dns/cloudflare)
 
 At this point we could use a domain name and put some DNS entries into place. To serve web traffic it's enough to create an A record pointing to the public IP address of kube1 plus a wildcard entry to be able to use subdomains:
 
