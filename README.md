@@ -436,6 +436,7 @@ We already opened port 80 and 443 during the initial firewall configuration, now
 - [ingress/00-namespace.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/00-namespace.yml)
 - [ingress/deployment.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/deployment.yml)
 - [ingress/service.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/service.yml)
+- [ingress/configmap.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/configmap.yml)
 
 One part requires special attention. In order to make sure NGINX runs on kube1—which is a tainted master node and no pods will normally be scheduled on it—we need to specify a toleration:
 
@@ -545,6 +546,11 @@ Now that everything is in place, we are able to expose services on specific doma
 - [dashboard/service.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/service.yml)
 - [dashboard/ingress.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/ingress.yml)
 - [dashboard/secret.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/secret.yml)
+
+Optionally, the following manifests can be used to get resource utilization graphs within the dashboard using [heapster](https://github.com/kubernetes/heapster):
+
+- [dashboard/heapster/deployment.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/heapster/deployment.yml)
+- [dashboard/heapster/service.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/heapster/service.yml)
 
 What's new here is that we enable **basic authentication** to restrict access to the dashboard. The following annotations are supported by the NGINX ingress controller, and may or may not work with other solutions:
 
