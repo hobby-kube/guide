@@ -662,6 +662,7 @@ In this example we're deploying [Minio](https://minio.io), an Amazon S3 compatib
 
 - [minio/deployment.yml](https://github.com/hobby-kube/manifests/blob/master/minio/deployment.yml)
 - [minio/ingress.yml](https://github.com/hobby-kube/manifests/blob/master/minio/ingress.yml)
+- [minio/secret.yml](https://github.com/hobby-kube/manifests/blob/master/minio/secret.yml) (MINIO_ACCESS_KEY: admin / MINIO_SECRET_KEY: admin.minio.secret.key)
 - [minio/service.yml](https://github.com/hobby-kube/manifests/blob/master/minio/service.yml)
 - [minio/pvc.yml](https://github.com/hobby-kube/manifests/blob/master/minio/pvc.yml)
 
