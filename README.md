@@ -461,7 +461,7 @@ affinity:
           operator: Exists
 ```
 
-Running `kubectl apply -f nginx/` will apply all manifests in this folder. First, a namespace called *ingress* is created, followed by the NGINX deployment, plus a default backend to serve 404 pages for undefined domains and routes including the necessary service object. There's no need to define a service object for NGINX itself, because we configure it to use the host network (`hostNetwork: true`), which means that the container is bound to the actual ports on the host, not to some virtual interface within the pod overlay network.
+Running `kubectl apply -f ingress/` will apply all manifests in this folder. First, a namespace called *ingress* is created, followed by the NGINX deployment, plus a default backend to serve 404 pages for undefined domains and routes including the necessary service object. There's no need to define a service object for NGINX itself, because we configure it to use the host network (`hostNetwork: true`), which means that the container is bound to the actual ports on the host, not to some virtual interface within the pod overlay network.
 
 Services are now able to make use of the ingress controller and receive public traffic with a simple manifest:
 
