@@ -488,6 +488,7 @@ The NGINX ingress controller is quite flexible and supports a whole bunch of [co
 ### DNS records
 
 ![Terraform](assets/terraform.png) [`dns/cloudflare`](https://github.com/hobby-kube/provisioning/tree/master/dns/cloudflare)
+![Terraform](assets/terraform.png) [`dns/google`](https://github.com/hobby-kube/provisioning/tree/master/dns/google)
 
 At this point we could use a domain name and put some DNS entries into place. To serve web traffic it's enough to create an A record pointing to the public IP address of kube1 plus a wildcard entry to be able to use subdomains:
 
