@@ -166,7 +166,7 @@ ufw allow in on wg0 # allow all traffic on VPN tunnel interface
 ufw reload
 ```
 
-Executing the command `wg-quick up wg0` on each host will start the VPN service and, if everything is configured correctly, the hosts should be able to establish connections between each other. Traffic can now be routed securely using the VPN IP addresses (10.0.1.1–10.0.1.3).
+Executing the command `systemctl start wg-quick@wg0` on each host will start the VPN service and, if everything is configured correctly, the hosts should be able to establish connections between each other. Traffic can now be routed securely using the VPN IP addresses (10.0.1.1–10.0.1.3).
 
 In order to check whether the connections are established successfully, `wg show` comes in handy:
 
@@ -190,27 +190,7 @@ peer: KaRMh...
   transfer: 41.86 GiB received, 25.09 GiB sent
 ```
 
-Last but not least, to automatically launch WireGuard whenever the system boots, a simple *systemd* service unit needs to be created:
-
-```sh
-# /etc/systemd/system/wireguard@.service
-[Unit]
-Description=WireGuard interface %i
-PartOf=wireguard.service
-ReloadPropagatedFrom=wireguard.service
-After=network.target
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/wg-quick up %i
-ExecStop=/usr/bin/wg-quick down %i
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Executing `systemctl enable wireguard@wg0.service` will launch the service whenever the system boots.
+Last but not least, run `systemctl enable wg-quick@wg0` to launch the service whenever the system boots.
 
 ## Installing Kubernetes
 
