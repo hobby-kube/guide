@@ -237,7 +237,7 @@ This section is not going to explain etcd configuration in depth, refer to the [
 # /etc/systemd/system/etcd.service
 [Unit]
 Description=etcd
-After=network.target wireguard@wg0.service
+After=network.target wg-quick@wg0.service
 
 [Service]
 Type=notify
