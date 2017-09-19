@@ -627,9 +627,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: minio-persistent-storage
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "portworx"
 spec:
+  storageClassName: portworx
   accessModes:
   - ReadWriteOnce
   resources:
