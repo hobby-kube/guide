@@ -202,7 +202,7 @@ Before getting started with Kubernetes itself, we need to take care of setting u
 
 ### Docker setup
 
-Docker is directly available from the package registries of most Linux distributions. Hints regarding supported versions are available in [the official kubeadm guide](https://kubernetes.io/docs/getting-started-guides/kubeadm/). Simply use your preferred way of installation. Running `apt-get install docker.io` on Ubuntu will install a stable version, although not the most recent one, but this is perfectly fine in our case.
+Docker is directly available from the package registries of most Linux distributions. Hints regarding supported versions are available in [the official kubeadm guide](https://kubernetes.io/docs/setup/independent/install-kubeadm/). Simply use your preferred way of installation. Running `apt-get install docker.io` on Ubuntu will install a stable version, although not the most recent one, but this is perfectly fine in our case.
 
 Kubernetes recommends running Docker with Iptables and IP Masq disabled. The easiest way to achieve this is by creating a systemd unit file to set the required configuration flags:
 
