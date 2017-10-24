@@ -222,7 +222,7 @@ If this file has been placed after Docker was installed, make sure to restart th
 Even though etcd is generally available with most package managers, it's recommended to manually install a more recent version:
 
 ```sh
-export ETCD_VERSION="v3.1.5"
+export ETCD_VERSION="v3.2.9"
 mkdir -p /opt/etcd
 curl -L https://storage.googleapis.com/etcd/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz \
   -o /opt/etcd-${ETCD_VERSION}-linux-amd64.tar.gz
