@@ -222,7 +222,7 @@ If this file has been placed after Docker was installed, make sure to restart th
 Even though etcd is generally available with most package managers, it's recommended to manually install a more recent version:
 
 ```sh
-export ETCD_VERSION="v3.2.9"
+export ETCD_VERSION="v3.2.13"
 mkdir -p /opt/etcd
 curl -L https://storage.googleapis.com/etcd/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz \
   -o /opt/etcd-${ETCD_VERSION}-linux-amd64.tar.gz
@@ -317,35 +317,32 @@ Kubernetes is built around openness, so it's up to us to choose and install a su
 ln -s /etc/kubernetes/admin.conf $HOME/.kube/config
 
 # install Weave Net
-kubectl apply -f https://git.io/weave-kube-1.6
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
 # allow traffic on the newly created weave network interface
 ufw allow in on weave
 ufw reload
 ```
 
-Unfortunately, Weave Net will not readily work with our current cluster configuration. To cut a long story short kube-proxy needs to be patched to run in userspace mode.
-
-Luckily, this can be done painlessly using [jq](https://stedolan.github.io/jq/), a powerful tool for querying and manipulating JSON:
+Unfortunately, Weave Net will not readily work with our current cluster configuration because traffic will be routed via the wrong network interface. This can be fixed by running the following command on each host:
 
 ```sh
-# install jq, a powerful tool for querying and manipulating JSON
-apt-get install jq
+ip route add 10.96.0.0/16 dev $VPN_INTERFACE src $VPN_IP
 
-# apply patch to kube-proxy
-kubectl -n kube-system get ds -l 'k8s-app=kube-proxy' -o json \
-  | jq '.items[0].spec.template.spec.containers[0].command |= .+ ["--proxy-mode=userspace"]' \
-  | kubectl apply -f - && kubectl -n kube-system delete pods -l 'k8s-app=kube-proxy'
+# on kube1:
+ip route add 10.96.0.0/16 dev wg0 src 10.0.1.1
+# on kube2:
+ip route add 10.96.0.0/16 dev wg0 src 10.0.1.2
+# on kube3:
+ip route add 10.96.0.0/16 dev wg0 src 10.0.1.3
 ```
-
-Pods will restart after a couple of seconds and run stably. The master node is ready.
 
 #### Joining the cluster nodes
 
 All that's left is to join the cluster with the other nodes. Run the following command on each host:
 
 ```sh
-kubeadm join --token=<TOKEN> 10.0.1.1:6443
+kubeadm join --token=<TOKEN> 10.0.1.1:6443 --discovery-token-unsafe-skip-ca-verification
 ```
 
 That's it, a Kubernetes cluster is ready at our disposal.
@@ -371,9 +368,9 @@ You're now able to remotely access the Kubernetes API. Running `kubectl get node
 
 ```sh
 NAME      STATUS    AGE       VERSION
-kube1     Ready     28d       v1.6.0
-kube2     Ready     28d       v1.6.0
-kube3     Ready     28d       v1.6.0
+kube1     Ready     1h        v1.9.1
+kube2     Ready     1h        v1.9.1
+kube3     Ready     1h        v1.9.1
 ```
 
 ### Role-Based Access Control
