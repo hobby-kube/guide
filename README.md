@@ -57,7 +57,7 @@ For a Kubernetes cluster to be resilient it's recommended that it consists of **
 
 At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offer at this time is definitely [Scaleway](https://www.scaleway.com/) where one gets a three node cluster up and running with enough memory (3x2GB) for **less than €10/month**. Unfortunately, Scaleway has currently only two data centers located in Paris and Amsterdam.
 
-[DigitalOcean](https://www.digitalocean.com/) is known for their great support and having data centers around the globe which is definitely a plus. The downside is that a three node cluster with a suitable amount of memory (3x1GB) sets you back $30/month.
+[DigitalOcean](https://www.digitalocean.com/) is known for their great support and having data centers around the globe which is definitely a plus. A three node (3x1GB) cluster will cost $15/month.
 
 [Linode](https://www.linode.com/), [Vultr](https://www.vultr.com/) and a couple of other providers with similar offers are other viable options. While they all have their advantages and disadvantages, they should be perfectly fine for hosting a Kubernetes cluster.
 
