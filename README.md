@@ -340,9 +340,9 @@ ip route add 10.96.0.0/16 dev wg0 src 10.0.1.3
 The added route will not survive a reboot as it is not persistent. To ensure that the route gets added after a reboot, we have to add a *systemd* service unit on each node which will wait for the wireguard interface to come up and after that adds the route. For kube1 it would look like this:
 
 ```sh
-# /etc/systemd/system/weave-route.service
+# /etc/systemd/system/overlay-route.service
 [Unit]
- Description=Weave Net Wireguard route
+ Description=Overlay network route for Wireguard
  After=wg-quick@wg0.service
 
 [Service]
