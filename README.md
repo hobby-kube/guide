@@ -357,7 +357,7 @@ The added route will not survive a reboot as it is not persistent. To ensure tha
 After that we have to enable it by running following command:
 
 ```sh
-systemctl enable weave-route.service
+systemctl enable overlay-route.service
 ```
 
 
