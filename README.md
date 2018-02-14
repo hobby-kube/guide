@@ -337,6 +337,30 @@ ip route add 10.96.0.0/16 dev wg0 src 10.0.1.2
 ip route add 10.96.0.0/16 dev wg0 src 10.0.1.3
 ```
 
+The added route will not survive a reboot as it is not persistent. To ensure that the route gets added after a reboot, we have to add a *systemd* service unit on each node which will wait for the wireguard interface to come up and after that adds the route. For kube1 it would look like this:
+
+```sh
+# /etc/systemd/system/overlay-route.service
+[Unit]
+ Description=Overlay network route for Wireguard
+ After=wg-quick@wg0.service
+
+[Service]
+ Type=oneshot
+ User=root
+ ExecStart=/sbin/ip route add 10.96.0.0/16 dev wg0 src 10.0.1.1
+
+[Install]
+ WantedBy=multi-user.target
+```
+
+After that we have to enable it by running following command:
+
+```sh
+systemctl enable overlay-route.service
+```
+
+
 #### Joining the cluster nodes
 
 All that's left is to join the cluster with the other nodes. Run the following command on each host:
