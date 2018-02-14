@@ -342,16 +342,16 @@ The added route will not survive a reboot as it is not persistent. To ensure tha
 ```sh
 # /etc/systemd/system/overlay-route.service
 [Unit]
- Description=Overlay network route for Wireguard
- After=wg-quick@wg0.service
+Description=Overlay network route for Wireguard
+After=wg-quick@wg0.service
 
 [Service]
- Type=oneshot
- User=root
- ExecStart=/sbin/ip route add 10.96.0.0/16 dev wg0 src 10.0.1.1
+Type=oneshot
+User=root
+ExecStart=/sbin/ip route add 10.96.0.0/16 dev wg0 src 10.0.1.1
 
 [Install]
- WantedBy=multi-user.target
+WantedBy=multi-user.target
 ```
 
 After that we have to enable it by running following command:
