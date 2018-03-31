@@ -483,7 +483,7 @@ spec:
           servicePort: example-service-http
 ```
 
-The NGINX ingress controller is quite flexible and supports a whole bunch of [configuration options](https://github.com/kubernetes/ingress/blob/master/controllers/nginx/configuration.md).
+The NGINX ingress controller is quite flexible and supports a whole bunch of [configuration options](https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/annotations.md).
 
 ### DNS records
 
