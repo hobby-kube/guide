@@ -651,8 +651,6 @@ spec:
 In order to operate on the storage cluster simply run commands within the Rook tools pod, such as:
 
 ```sh
-# show status summary
-kubectl -n rook exec -it rook-tools -- rookctl status
 # show ceph status
 kubectl -n rook exec -it rook-tools -- ceph status
 ```
