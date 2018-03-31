@@ -653,6 +653,12 @@ In order to operate on the storage cluster simply run commands within the Rook t
 ```sh
 # show ceph status
 kubectl -n rook exec -it rook-tools -- ceph status
+
+# show volumes
+kubectl -n rook exec -it rook-tools -- rbd list replicapool
+
+# show volume information
+kubectl -n rook exec -it rook-tools -- rbd info replicapool/<volume>
 ```
 
 Further commands are listed in the [Rook Tools documentation](https://rook.io/docs/rook/master/tools.html).
