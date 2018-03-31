@@ -36,7 +36,7 @@ This guide is accompanied by a fully automated cluster setup solution in the sha
 - [Distributed block storage](#distributed-block-storage)
   - [Persistent volumes](#persistent-volumes)
   - [Choosing a solution](#choosing-a-solution)
-  - [Deploying Portworx](#deploying-portworx)
+  - [Deploying Rook](#deploying-rook)
   - [Consuming storage](#consuming-storage)
 - [Where to go from here](#where-to-go-from-here)
 
@@ -593,50 +593,71 @@ Our cluster consists of multiple nodes and **we need the ability to attach persi
 
 Currently there are a couple of interesting solutions matching our criteria, but they all have their downsides:
 
-- [Rook.io](https://rook.io/) is an open source project based on Ceph. It looks promising, but is still pretty much in alpha state and lacking some serious documentation.
+- [Rook.io](https://rook.io/) is an open source project based on Ceph. Even though it's in an early stage, it offers good documentation and is quite flexible.
 - [gluster-kubernetes](https://github.com/gluster/gluster-kubernetes) is an open source project built around GlusterFS and Heketi. Setup seems tedious at this point, requiring some kind of schema to be provided in JSON format.
 - [Portworx](https://portworx.com/) is a commercial project that offers a [free variant](https://github.com/portworx/px-dev) of their proprietary software, providing great documentation and tooling.
 
-Even though we would definitely prefer using open source software, Portworx offers the best solution currently available. Setup is simple, deployment and operation is transparent. It launches just a single pod per instance where others create a whole bunch of pods and sidecars. Things might change in the future, but for now we're going to settle on Portworx.
+Rook and Portworx both shine with a simple setup and transparent operations. Rook is our preferred choice because it offers a little more flexibility and is open source in contrast to Portworx, even though the latter wins in simplicity by launching just a single pod per instance.
 
-### Deploying Portworx
+### Deploying Rook
 
-As we run only a three node cluster, we're going to deploy PX on all three of them using a DaemonSet with master toleration. The [official documentation](https://docs.portworx.com/run-with-kubernetes.html) states that PX should be deployed manually on each host using `docker run`. The main reason behind this statement is probably PX's need for mounting volumes in shared mode (e.g. `-v /host/path:/container/path:shared`). Officially, the Kubernetes pod specification doesn't support this flag, but we can work around this by appending `:shared` to the mount path in the pod spec.
+As we run only a three node cluster, we're going to deploy Rook on all three of them by adding a master toleration to the Rook cluster definition.
 
-Before deploying the Portworx DaemonSet we need to provide a raw, unformatted block device that will be used for storage on each host. These can either be attached volumes or local loopback devices. On Scaleway, the volume on which the operating system is installed is called `/dev/vda`. Attaching another volume will be available as  `/dev/vdb`. On DigitalOcean things work a little differently. Attached volumes are referenced with something like  `/dev/disk/by-id/scsi-0DO_Volume_<VOLUME_NAME>`.
+Before deploying Rook we need to either provide a raw, unformatted block device or specify a directory that will be used for storage on each host. On Scaleway, the volume on which the operating system is installed is called `/dev/vda`. Attaching another volume will be available as  `/dev/vdb`. On DigitalOcean things work a little differently. Attached volumes are referenced with something like  `/dev/disk/by-id/scsi-0DO_Volume_<VOLUME_NAME>`.
 
-Make sure to edit the daemonset manifest listed below and replace the value of the `PX_STORAGE_DEVICE` env variable with a block device available in your environment. The resulting manifests turn out pretty lean for such a seemingly complex service:
+Make sure to edit the cluster manifest as shown below and choose the right configuration depending on whether you want to use a directory or a block device available in your environment for storage:
 
-- [storage/daemonset.yml](https://github.com/hobby-kube/manifests/blob/master/storage/daemonset.yml)
+```yaml
+# storage/cluster.yml
+  # ...
+  storage:
+    useAllNodes: true
+    useAllDevices: false
+    # Uncomment the following line and replace it with the name of block device used for storage:
+    # deviceFilter: vdb
+    # Uncomment the following lines to use a directory for storage:
+    # directories:
+    # - path: /storage/data
+    storeConfig:
+      storeType: bluestore
+      databaseSizeMB: 1024
+      journalSizeMB: 1024
+```
+
+Apply the storage manifests in the following order:
+
+- [storage/00-namespace.yml](https://github.com/hobby-kube/manifests/blob/master/storage/00-namespace.yml)
+- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the pods to be deployed `kubectl -n rook get pods` before continuing)
+- [storage/cluster.yml](https://github.com/hobby-kube/manifests/blob/master/storage/cluster.yml)
 - [storage/storageclass.yml](https://github.com/hobby-kube/manifests/blob/master/storage/storageclass.yml)
+- [storage/tools.yml](https://github.com/hobby-kube/manifests/blob/master/storage/tools.yml)
 
-It's worth mentioning that the storage class manifest contains a few important parameters:
+It's worth mentioning that the storageclass manifest contains the configuration for the replication factor:
 
 ```yaml
 # storage/storageclass.yml
-apiVersion: storage.k8s.io/v1beta1
-kind: StorageClass
+apiVersion: rook.io/v1alpha1
+kind: Pool
 metadata:
-  name: portworx
-provisioner: kubernetes.io/portworx-volume
-parameters:
-  repl: "2" # replication factor
-  snap_interval: "0" # turn off automatic snapshots
-  io_priority: "high"
+  name: replicapool
+  namespace: rook
+spec:
+  replicated:
+    size: 2 # replication factor
+---
+# ...
 ```
 
-Further parameters are listed in the [Portworx storage class documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#portworx-volume).
-
-In order to operate on the storage cluster use the `pxctl` control tool ([documentation](https://docs.portworx.com/cli-reference.html)) via one of the Portworx containers. Here are some examples:
+In order to operate on the storage cluster simply run commands within the Rook tools pod, such as:
 
 ```sh
 # show status summary
-kubectl exec -it portworx-storage-wp797 -- /opt/pwx/bin/pxctl status
-# list volumes in the cluster
-kubectl exec -it portworx-storage-wp797 -- /opt/pwx/bin/pxctl volume list
-# show cluster wide alerts
-kubectl exec -it portworx-storage-wp797 -- /opt/pwx/bin/pxctl cluster alerts
+kubectl -n rook exec -it rook-tools -- rookctl status
+# show ceph status
+kubectl -n rook exec -it rook-tools -- ceph status
 ```
+
+Further commands are listed in the [Rook Tools documentation](https://rook.io/docs/rook/master/tools.html).
 
 ### Consuming storage
 
@@ -649,7 +670,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: minio-persistent-storage
 spec:
-  storageClassName: portworx
+  storageClassName: rook-block
   accessModes:
   - ReadWriteOnce
   resources:
@@ -657,7 +678,7 @@ spec:
       storage: 5Gi
 ```
 
-This will create a volume called *minio-persistent-storage* with 5GB storage capacity. Please note that there's currently a bug in PX related to ReadWriteMany volume claims ([bug report](https://github.com/portworx/px-dev/issues/23)). Volumes can only be claimed in ReadWriteOnce access mode for the time being.
+This will create a volume called *minio-persistent-storage* with 5GB storage capacity.
 
 In this example we're deploying [Minio](https://minio.io), an Amazon S3 compatible object storage server, to create and mount a persistent volume:
 
