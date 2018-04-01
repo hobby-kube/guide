@@ -166,6 +166,13 @@ ufw allow in on wg0 # allow all traffic on VPN tunnel interface
 ufw reload
 ```
 
+Before starting Wireguard we need to make sure that ip forwarding is enabled. Executing `sysctl net.ipv4.ip_forward` should show `net.ipv4.ip_forward = 1`. If this is not the case, run the following commands:
+
+```sh
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf # enable ip4 forwarding
+sysctl -p # apply settings from /etc/sysctl.conf
+```
+
 Executing the command `systemctl start wg-quick@wg0` on each host will start the VPN service and, if everything is configured correctly, the hosts should be able to establish connections between each other. Traffic can now be routed securely using the VPN IP addresses (10.0.1.1–10.0.1.3).
 
 In order to check whether the connections are established successfully, `wg show` comes in handy:
@@ -391,9 +398,9 @@ You're now able to remotely access the Kubernetes API. Running `kubectl get node
 
 ```sh
 NAME      STATUS    AGE       VERSION
-kube1     Ready     1h        v1.9.1
-kube2     Ready     1h        v1.9.1
-kube3     Ready     1h        v1.9.1
+kube1     Ready     4m        v1.10.0
+kube2     Ready     4m        v1.10.0
+kube3     Ready     4m        v1.10.0
 ```
 
 ### Role-Based Access Control
@@ -627,7 +634,7 @@ Make sure to edit the cluster manifest as shown below and choose the right confi
 Apply the storage manifests in the following order:
 
 - [storage/00-namespace.yml](https://github.com/hobby-kube/manifests/blob/master/storage/00-namespace.yml)
-- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the pods to be deployed `kubectl -n rook get pods` before continuing)
+- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the rook-ageng pods to be deployed `kubectl -n rook get pods` before continuing)
 - [storage/cluster.yml](https://github.com/hobby-kube/manifests/blob/master/storage/cluster.yml)
 - [storage/storageclass.yml](https://github.com/hobby-kube/manifests/blob/master/storage/storageclass.yml)
 - [storage/tools.yml](https://github.com/hobby-kube/manifests/blob/master/storage/tools.yml)
