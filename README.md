@@ -1,6 +1,6 @@
 # Kubernetes clusters for the hobbyist
 
-This guide answers the question of how to setup and operate a fully functional, secure Kubernetes cluster on a cloud provider such as DigitalOcean or Scaleway. It explains how to overcome the lack of external ingress controllers, fully isolated secure private networking and persistent distributed block storage.
+This guide answers the question of how to setup and operate a fully functional, secure Kubernetes cluster on a cloud provider such as Hetzner Cloud, DigitalOcean or Scaleway. It explains how to overcome the lack of external ingress controllers, fully isolated secure private networking and persistent distributed block storage.
 
 Be aware, that the following sections might be opinionated. Kubernetes is an evolving, fast paced environment, which means this guide will probably be outdated at times, depending on the author's spare time and individual contributions. Due to this fact contributions are highly appreciated.
 
@@ -52,12 +52,13 @@ For a Kubernetes cluster to be resilient it's recommended that it consists of **
 
 ## Choosing a cloud provider
 
+![Terraform](assets/terraform.png) [`provider/hcloud`](https://github.com/hobby-kube/provisioning/tree/master/provider/hcloud)
 ![Terraform](assets/terraform.png) [`provider/digitalocean`](https://github.com/hobby-kube/provisioning/tree/master/provider/digitalocean)
 ![Terraform](assets/terraform.png) [`provider/scaleway`](https://github.com/hobby-kube/provisioning/tree/master/provider/scaleway)
 
-At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offer at this time is definitely [Scaleway](https://www.scaleway.com/) where one gets a three node cluster up and running with enough memory (3x2GB) for **less than €10/month**. Unfortunately, Scaleway has currently only two data centers located in Paris and Amsterdam.
+At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offer at this time is definitely [Hetzner Cloud](https://www.hetzner.com/cloud) where one gets a suitable three node cluster up and running for **a little less than €7.50/month** (3x2GB), followed by [Scaleway](https://www.scaleway.com/) starting from just below €10 (3x2GB). Both Hetzner and Scaleway currently only operate data centers located in Europe.
 
-[DigitalOcean](https://www.digitalocean.com/) is known for their great support and having data centers around the globe which is definitely a plus. A three node (3x1GB) cluster will cost $15/month.
+[DigitalOcean](https://www.digitalocean.com/) is known for their great support and having data centers around the globe which is definitely a plus. A three node cluster will cost $15/month (3x1GB).
 
 [Linode](https://www.linode.com/), [Vultr](https://www.vultr.com/) and a couple of other providers with similar offers are other viable options. While they all have their advantages and disadvantages, they should be perfectly fine for hosting a Kubernetes cluster.
 
@@ -125,6 +126,8 @@ Once WireGuard has been compiled, it's time to create the configuration files. E
 | kube2 | 10.8.23.94                 | 10.0.1.2             |
 | kube3 | 10.8.23.95                 | 10.0.1.3             |
 
+Please note that Hetzner Cloud doesn't provide a private network interface, but it's perfectly fine to run Wireguard on the public interface. Just make sure to use the public IP addresses and the public network interface (eth0).
+
 In this scenario, a configuration file for kube1 would look like this:
 
 ```sh
@@ -161,8 +164,10 @@ After creating a file named `/etc/wireguard/wg0.conf` on each host containing th
 What's left is to add the following firewall rules:
 
 ```sh
-ufw allow in on eth1 to any port 51820 # open VPN port on private network interface
-ufw allow in on wg0 # allow all traffic on VPN tunnel interface
+# open VPN port on private network interface (use eth0 on Hetzner Cloud)
+ufw allow in on eth1 to any port 51820
+# allow all traffic on VPN tunnel interface
+ufw allow in on wg0
 ufw reload
 ```
 
