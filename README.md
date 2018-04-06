@@ -601,14 +601,13 @@ Even though we would definitely prefer using open source software, Portworx offe
 
 ### Deploying Portworx
 
-As we run only a three node cluster, we're going to deploy PX on all three of them using a DaemonSet with master toleration. The [official documentation](https://docs.portworx.com/run-with-kubernetes.html) states that PX should be deployed manually on each host using `docker run`. The main reason behind this statement is probably PX's need for mounting volumes in shared mode (e.g. `-v /host/path:/container/path:shared`). Officially, the Kubernetes pod specification doesn't support this flag, but we can work around this by appending `:shared` to the mount path in the pod spec.
+Portworx deploys as a Daemonset.
 
 Before deploying the Portworx DaemonSet we need to provide a raw, unformatted block device that will be used for storage on each host. These can either be attached volumes or local loopback devices. On Scaleway, the volume on which the operating system is installed is called `/dev/vda`. Attaching another volume will be available as  `/dev/vdb`. On DigitalOcean things work a little differently. Attached volumes are referenced with something like  `/dev/disk/by-id/scsi-0DO_Volume_<VOLUME_NAME>`.
 
-Make sure to edit the daemonset manifest listed below and replace the value of the `PX_STORAGE_DEVICE` env variable with a block device available in your environment. The resulting manifests turn out pretty lean for such a seemingly complex service:
+Follow the [official install guide](https://docs.portworx.com/scheduler/kubernetes/install.html) for the installation steps. When generating the spec, you can skip giving the list of block devices. Portworx will automatically pick available block devices on the nodes.
 
-- [storage/daemonset.yml](https://github.com/hobby-kube/manifests/blob/master/storage/daemonset.yml)
-- [storage/storageclass.yml](https://github.com/hobby-kube/manifests/blob/master/storage/storageclass.yml)
+The resulting manifests turn out pretty lean for such a seemingly complex service.
 
 It's worth mentioning that the storage class manifest contains a few important parameters:
 
@@ -622,20 +621,25 @@ provisioner: kubernetes.io/portworx-volume
 parameters:
   repl: "2" # replication factor
   snap_interval: "0" # turn off automatic snapshots
-  io_priority: "high"
+  priority_io: "high" # use high io priority storage pool
 ```
 
-Further parameters are listed in the [Portworx storage class documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#portworx-volume).
+Further parameters are listed in the [Portworx storage class documentation](https://docs.portworx.com/scheduler/kubernetes/dynamic-provisioning.html).
 
-In order to operate on the storage cluster use the `pxctl` control tool ([documentation](https://docs.portworx.com/cli-reference.html)) via one of the Portworx containers. Here are some examples:
+In order to operate on the storage cluster use the `pxctl` control tool ([documentation](https://docs.portworx.com/cli-reference.html)) via one of the Portworx pods. Here are some examples:
 
 ```sh
+# First get the Portworx pod name
+PX_POD=$(kubectl get pods -l name=portworx -n kube-system -o jsonpath='{.items[0].metadata.name}')
+
 # show status summary
-kubectl exec -it portworx-storage-wp797 -- /opt/pwx/bin/pxctl status
+kubectl exec $PX_POD -n kube-system -- /opt/pwx/bin/pxctl status
+
 # list volumes in the cluster
-kubectl exec -it portworx-storage-wp797 -- /opt/pwx/bin/pxctl volume list
+kubectl exec $PX_POD -n kube-system  -- /opt/pwx/bin/pxctl volume list
+
 # show cluster wide alerts
-kubectl exec -it portworx-storage-wp797 -- /opt/pwx/bin/pxctl cluster alerts
+kubectl exec $PX_POD -n kube-system  -- /opt/pwx/bin/pxctl cluster alerts
 ```
 
 ### Consuming storage
