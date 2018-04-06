@@ -677,9 +677,54 @@ kubectl -n rook exec -it rook-tools -- rbd info replicapool/<volume>
 
 Further commands are listed in the [Rook Tools documentation](https://rook.io/docs/rook/master/tools.html).
 
+### Deploying Portworx
+
+Portworx deploys as a Daemonset.
+
+Before deploying the Portworx DaemonSet we need to provide a raw, unformatted block device that will be used for storage on each host. These can either be attached volumes or local loopback devices. On Scaleway, the volume on which the operating system is installed is called `/dev/vda`. Attaching another volume will be available as  `/dev/vdb`. On DigitalOcean things work a little differently. Attached volumes are referenced with something like  `/dev/disk/by-id/scsi-0DO_Volume_<VOLUME_NAME>`.
+
+Follow the [official install guide](https://docs.portworx.com/scheduler/kubernetes/install.html) for the installation steps. When generating the spec, you can skip giving the list of block devices. Portworx will automatically pick available block devices on the nodes.
+
+The resulting manifests turn out pretty lean for such a seemingly complex service.
+
+It's worth mentioning that the storage class manifest contains a few important parameters:
+
+```yaml
+# storage/storageclass.yml
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: portworx
+provisioner: kubernetes.io/portworx-volume
+parameters:
+  repl: "2" # replication factor
+  snap_interval: "0" # turn off automatic snapshots
+  priority_io: "high" # use high io priority storage pool
+```
+
+Further parameters are listed in the [Portworx storage class documentation](https://docs.portworx.com/scheduler/kubernetes/dynamic-provisioning.html).
+
+In order to operate on the storage cluster use the `pxctl` control tool ([documentation](https://docs.portworx.com/cli-reference.html)) via one of the Portworx pods. Here are some examples:
+
+```sh
+# First get the Portworx pod name
+PX_POD=$(kubectl get pods -l name=portworx -n kube-system -o jsonpath='{.items[0].metadata.name}')
+
+# show status summary
+kubectl exec $PX_POD -n kube-system -- /opt/pwx/bin/pxctl status
+
+# list volumes in the cluster
+kubectl exec $PX_POD -n kube-system  -- /opt/pwx/bin/pxctl volume list
+
+# show cluster wide alerts
+kubectl exec $PX_POD -n kube-system  -- /opt/pwx/bin/pxctl cluster alerts
+```
+
 ### Consuming storage
 
 The storage class we created can be consumed with a persistent volume claim:
+
+#### For rook
 
 ```yaml
 # minio/pvc.yml
@@ -689,6 +734,23 @@ metadata:
   name: minio-persistent-storage
 spec:
   storageClassName: rook-block
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+```
+
+#### For Portworx
+
+```yaml
+# minio/pvc.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-persistent-storage
+spec:
+  storageClassName: portworx
   accessModes:
   - ReadWriteOnce
   resources:
