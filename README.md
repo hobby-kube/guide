@@ -641,7 +641,7 @@ Make sure to edit the cluster manifest as shown below and choose the right confi
 Apply the storage manifests in the following order:
 
 - [storage/00-namespace.yml](https://github.com/hobby-kube/manifests/blob/master/storage/00-namespace.yml)
-- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the rook-ageng pods to be deployed `kubectl -n rook get pods` before continuing)
+- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the rook-agent pods to be deployed `kubectl -n rook get pods` before continuing)
 - [storage/cluster.yml](https://github.com/hobby-kube/manifests/blob/master/storage/cluster.yml)
 - [storage/storageclass.yml](https://github.com/hobby-kube/manifests/blob/master/storage/storageclass.yml)
 - [storage/tools.yml](https://github.com/hobby-kube/manifests/blob/master/storage/tools.yml)
