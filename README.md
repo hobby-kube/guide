@@ -627,21 +627,25 @@ Make sure to edit the cluster manifest as shown below and choose the right confi
   storage:
     useAllNodes: true
     useAllDevices: false
-    # Uncomment the following line and replace it with the name of block device used for storage:
+    # Uncomment the following lines and replace it with the name of block device used for storage:
     # deviceFilter: vdb
-    # Uncomment the following lines to use a directory for storage:
+    # storeType: bluestore
+    #   databaseSizeMB: 1024
+    #   journalSizeMB: 1024
+    #
+    # Uncomment the following lines when using a directory for storage:
     # directories:
     # - path: /storage/data
-    storeConfig:
-      storeType: bluestore
-      databaseSizeMB: 1024
-      journalSizeMB: 1024
+    # storeConfig:
+    #   storeType: filestore
+    #   databaseSizeMB: 1024
+    #   journalSizeMB: 1024
 ```
 
 Apply the storage manifests in the following order:
 
 - [storage/00-namespace.yml](https://github.com/hobby-kube/manifests/blob/master/storage/00-namespace.yml)
-- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the rook-agent pods to be deployed `kubectl -n rook get pods` before continuing)
+- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the `rook-agent` pods to be deployed `kubectl -n rook get pods` before continuing)
 - [storage/cluster.yml](https://github.com/hobby-kube/manifests/blob/master/storage/cluster.yml)
 - [storage/storageclass.yml](https://github.com/hobby-kube/manifests/blob/master/storage/storageclass.yml)
 - [storage/tools.yml](https://github.com/hobby-kube/manifests/blob/master/storage/tools.yml)
