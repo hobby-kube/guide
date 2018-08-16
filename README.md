@@ -404,10 +404,10 @@ kubectl config set-cluster kubernetes --server=https://<PUBLIC_IP_KUBE1>:6443
 You're now able to remotely access the Kubernetes API. Running `kubectl get nodes` should show a list of nodes similar to this:
 
 ```sh
-NAME      STATUS    AGE       VERSION
-kube1     Ready     4m        v1.10.0
-kube2     Ready     4m        v1.10.0
-kube3     Ready     4m        v1.10.0
+NAME      STATUS    ROLES     AGE       VERSION
+kube1     Ready     master    47m       v1.11.2
+kube2     Ready     <none>    46m       v1.11.2
+kube3     Ready     <none>    46m       v1.11.2
 ```
 
 ### Role-Based Access Control
@@ -564,10 +564,10 @@ Now that everything is in place, we are able to expose services on specific doma
 - [dashboard/ingress.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/ingress.yml)
 - [dashboard/secret.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/secret.yml)
 
-Optionally, the following manifests can be used to get resource utilization graphs within the dashboard using [heapster](https://github.com/kubernetes/heapster):
+Optionally, the following manifests can be used to get resource utilization graphs within the dashboard using [metrics-server](https://github.com/kubernetes-incubator/metrics-server):
 
-- [dashboard/heapster/deployment.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/heapster/deployment.yml)
-- [dashboard/heapster/service.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/heapster/service.yml)
+- [dashboard/metrics-server/deployment.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/metrics-server/deployment.yml)
+- [dashboard/metrics-server/service.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/metrics-server/service.yml)
 
 What's new here is that we enable **basic authentication** to restrict access to the dashboard. The following annotations are supported by the NGINX ingress controller, and may or may not work with other solutions:
 
