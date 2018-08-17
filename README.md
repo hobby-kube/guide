@@ -568,6 +568,7 @@ Optionally, the following manifests can be used to get resource utilization grap
 
 - [dashboard/metrics-server/deployment.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/metrics-server/deployment.yml)
 - [dashboard/metrics-server/service.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/metrics-server/service.yml)
+- [dashboard/metrics-server/apiservice.yml](https://github.com/hobby-kube/manifests/blob/master/dashboard/metrics-server/apiservice.yml)
 
 What's new here is that we enable **basic authentication** to restrict access to the dashboard. The following annotations are supported by the NGINX ingress controller, and may or may not work with other solutions:
 
