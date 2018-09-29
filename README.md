@@ -303,15 +303,16 @@ Before initializing the master node, we need to create a manifest on kube1 which
 
 ```yaml
 # /tmp/master-configuration.yml
-apiVersion: kubeadm.k8s.io/v1alpha1
+apiVersion: kubeadm.k8s.io/v1alpha2
 kind: MasterConfiguration
 api:
   advertiseAddress: 10.0.1.1
 etcd:
-  endpoints:
-  - http://10.0.1.1:2379
-  - http://10.0.1.2:2379
-  - http://10.0.1.3:2379
+  external:
+    endpoints:
+    - http://10.0.1.1:2379
+    - http://10.0.1.2:2379
+    - http://10.0.1.3:2379
 apiServerCertSANs:
   - <PUBLIC_IP_KUBE1>
 ```
