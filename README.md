@@ -522,10 +522,10 @@ Additionally, it might be a good idea to assign a subdomain to each host, e.g. k
 
 Thanks to [Let’s Encrypt](https://letsencrypt.org/) and a project called [cert-manager](https://github.com/jetstack/cert-manager) it's incredibly easy to obtain free certificates for any domain name pointing at our Kubernetes cluster. Setting this service up takes no time and it plays well with the NGINX ingress controller we deployed earlier. These are the related manifests:
 
-- [ingress/tls/cert-manager-resources.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/cert-manager-resources.yml),
-- [ingress/tls/cert-manager.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/cert-manager.yml),
+- [ingress/tls/cert-manager-resources.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/cert-manager-resources.yml)
+- [ingress/tls/cert-manager.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/cert-manager.yml)
 
-Before deploying using the manifests above, make sure to replace the email address a in `ingress/tls/cert-manager.yml` with your own.
+Before deploying cert-manager using the manifests above, make sure to replace the email address in `ingress/tls/cert-manager.yml` with your own.
 
 To enable certificates for a service, the ingress manifest needs to be slightly extended:
 
@@ -535,15 +535,15 @@ kind: Ingress
 metadata:
   name: example-ingress
   annotations:
-    kubernetes.io/tls-acme: "true" # enable certificates defined in tls section below
+    kubernetes.io/tls-acme: "true" # enable certificates
     kubernetes.io/ingress.class: "nginx"
 spec:
-  tls:
+  tls: # specify domains to fetch certificates for
   - hosts:
-    - example.com
-    secretName: ingress-tls
+    - service.example.com
+    secretName: example-service-tls
   rules:
-  - host: www.example.com
+  - host: service.example.com
     http:
       paths:
       - path: /
@@ -552,7 +552,7 @@ spec:
           servicePort: example-service-http
 ```
 
-After applying this manifest, `cert-manager` will try to obtain a certificate for `www.example.com` and reload the NGINX configuration to enable TLS. Make sure to check the logs of the `cert-manager` pod if something goes wrong.
+After applying this manifest, cert-manager will try to obtain a certificate for service.example.com and reload the NGINX configuration to enable TLS. Make sure to check the logs of the cert-manager pod if something goes wrong.
 
 NGINX will automatically redirect clients to HTTPS whenever TLS is enabled. In case you still want to serve traffic on HTTP, add `ingress.kubernetes.io/ssl-redirect: "false"`  to the list of annotations.
 
