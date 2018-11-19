@@ -498,7 +498,7 @@ spec:
           servicePort: example-service-http
 ```
 
-The NGINX ingress controller is quite flexible and supports a whole bunch of [configuration options](https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md).
+The NGINX ingress controller is quite flexible and supports a whole bunch of [configuration options](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/).
 
 ### DNS records
 
@@ -554,7 +554,7 @@ spec:
 
 After applying this manifest, cert-manager will try to obtain a certificate for service.example.com and reload the NGINX configuration to enable TLS. Make sure to check the logs of the cert-manager pod if something goes wrong.
 
-NGINX will automatically redirect clients to HTTPS whenever TLS is enabled. In case you still want to serve traffic on HTTP, add `ingress.kubernetes.io/ssl-redirect: "false"`  to the list of annotations.
+NGINX will automatically redirect clients to HTTPS whenever TLS is enabled. In case you still want to serve traffic on HTTP, add `nginx.ingress.kubernetes.io/ssl-redirect: "false"`  to the list of annotations.
 
 ### Deploying the Kubernetes Dashboard
 
@@ -577,9 +577,9 @@ What's new here is that we enable **basic authentication** to restrict access to
 # from dashboard/ingress.yml
 annotations:
   # ...
-  ingress.kubernetes.io/auth-type: basic
-  ingress.kubernetes.io/auth-secret: kubernetes-dashboard-auth
-  ingress.kubernetes.io/auth-realm: "Authentication Required"
+  nginx.ingress.kubernetes.io/auth-type: basic
+  nginx.ingress.kubernetes.io/auth-secret: kubernetes-dashboard-auth
+  nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
 
 # dashboard/secret.yml
 apiVersion: v1
