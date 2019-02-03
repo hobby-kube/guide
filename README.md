@@ -1,4 +1,6 @@
 # Kubernetes clusters for the hobbyist
+[![Backers on Open Collective](https://opencollective.com/hobby-kube/backers/badge.svg)](#backers)
+[![Sponsors on Open Collective](https://opencollective.com/hobby-kube/sponsors/badge.svg)](#sponsors) 
 
 > The tinkerers of today are the leaders of tomorrow.
 
@@ -734,3 +736,33 @@ The *minio-persistent-storage* volume will live as long as the persistent volume
 ## Where to go from here
 
 This was hopefully just the beginning of your journey. There are many more things to explore around Kubernetes. Feel free to leave feedback or raise questions at any time by opening an issue [here](https://github.com/hobby-kube/guide/issues).
+
+## Contributors
+
+This project exists thanks to all the people who contribute. 
+<a href="https://github.com/hobby-kube/guide/graphs/contributors"><img src="https://opencollective.com/hobby-kube/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/hobby-kube#backer)]
+
+<a href="https://opencollective.com/hobby-kube#backers" target="_blank"><img src="https://opencollective.com/hobby-kube/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/hobby-kube#sponsor)]
+
+<a href="https://opencollective.com/hobby-kube/sponsor/0/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/1/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/2/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/3/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/4/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/5/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/6/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/7/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/8/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/hobby-kube/sponsor/9/website" target="_blank"><img src="https://opencollective.com/hobby-kube/sponsor/9/avatar.svg"></a>
+
+
