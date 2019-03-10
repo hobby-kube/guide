@@ -128,7 +128,7 @@ Once WireGuard has been compiled, it's time to create the configuration files. E
 | kube2 | 10.8.23.94                 | 10.0.1.2             |
 | kube3 | 10.8.23.95                 | 10.0.1.3             |
 
-Please note that Hetzner Cloud doesn't provide a private network interface, but it's perfectly fine to run Wireguard on the public interface. Just make sure to use the public IP addresses and the public network interface (eth0).
+Please note that Hetzner Cloud doesn't provide a private network interface, but it's perfectly fine to run WireGuard on the public interface. Just make sure to use the public IP addresses and the public network interface (eth0).
 
 In this scenario, a configuration file for kube1 would look like this:
 
@@ -173,7 +173,7 @@ ufw allow in on wg0
 ufw reload
 ```
 
-Before starting Wireguard we need to make sure that ip forwarding is enabled. Executing `sysctl net.ipv4.ip_forward` should show `net.ipv4.ip_forward = 1`. If this is not the case, run the following commands:
+Before starting WireGuard we need to make sure that ip forwarding is enabled. Executing `sysctl net.ipv4.ip_forward` should show `net.ipv4.ip_forward = 1`. If this is not the case, run the following commands:
 
 ```sh
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf # enable ip4 forwarding
@@ -361,12 +361,12 @@ ip route add 10.96.0.0/16 dev wg0 src 10.0.1.2
 ip route add 10.96.0.0/16 dev wg0 src 10.0.1.3
 ```
 
-The added route will not survive a reboot as it is not persistent. To ensure that the route gets added after a reboot, we have to add a *systemd* service unit on each node which will wait for the wireguard interface to come up and after that adds the route. For kube1 it would look like this:
+The added route will not survive a reboot as it is not persistent. To ensure that the route gets added after a reboot, we have to add a *systemd* service unit on each node which will wait for the WireGuard interface to come up and after that adds the route. For kube1 it would look like this:
 
 ```sh
 # /etc/systemd/system/overlay-route.service
 [Unit]
-Description=Overlay network route for Wireguard
+Description=Overlay network route for WireGuard
 After=wg-quick@wg0.service
 
 [Service]
