@@ -303,18 +303,27 @@ Before initializing the master node, we need to create a manifest on kube1 which
 
 ```yaml
 # /tmp/master-configuration.yml
-apiVersion: kubeadm.k8s.io/v1alpha2
-kind: MasterConfiguration
-api:
+apiVersion: kubeadm.k8s.io/v1alpha3
+kind: InitConfiguration
+apiEndpoint:
   advertiseAddress: 10.0.1.1
+  bindPort: 6443
+---
+apiVersion: kubeadm.k8s.io/v1alpha3
+kind: ClusterConfiguration
+certificatesDir: /etc/kubernetes/pki
+apiServerCertSANs:
+  - <PUBLIC_IP_KUBE1>
 etcd:
   external:
     endpoints:
-    - http://10.0.1.1:2379
-    - http://10.0.1.2:2379
-    - http://10.0.1.3:2379
-apiServerCertSANs:
-  - <PUBLIC_IP_KUBE1>
+      - http://10.0.1.1:2379
+      - http://10.0.1.2:2379
+      - http://10.0.1.3:2379
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+failSwapOn: false
 ```
 
 Then we run the following command on kube1:
