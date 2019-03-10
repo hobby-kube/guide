@@ -414,10 +414,10 @@ kubectl config set-cluster kubernetes --server=https://<PUBLIC_IP_KUBE1>:6443
 You're now able to remotely access the Kubernetes API. Running `kubectl get nodes` should show a list of nodes similar to this:
 
 ```sh
-NAME      STATUS    ROLES     AGE       VERSION
-kube1     Ready     master    47m       v1.11.2
-kube2     Ready     <none>    46m       v1.11.2
-kube3     Ready     <none>    46m       v1.11.2
+NAME    STATUS   ROLES    AGE   VERSION
+kube1   Ready    master   38m   v1.13.4
+kube2   Ready    <none>   38m   v1.13.4
+kube3   Ready    <none>   38m   v1.13.4
 ```
 
 ### Role-Based Access Control
