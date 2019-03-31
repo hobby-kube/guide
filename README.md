@@ -236,7 +236,7 @@ If this file has been placed after Docker was installed, make sure to restart th
 Even though etcd is generally available with most package managers, it's recommended to manually install a more recent version:
 
 ```sh
-export ETCD_VERSION="v3.2.13"
+export ETCD_VERSION="v3.3.12"
 mkdir -p /opt/etcd
 curl -L https://storage.googleapis.com/etcd/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz \
   -o /opt/etcd-${ETCD_VERSION}-linux-amd64.tar.gz
@@ -303,16 +303,17 @@ Before initializing the master node, we need to create a manifest on kube1 which
 
 ```yaml
 # /tmp/master-configuration.yml
-apiVersion: kubeadm.k8s.io/v1alpha3
+apiVersion: kubeadm.k8s.io/v1beta1
 kind: InitConfiguration
-apiEndpoint:
+localAPIEndpoint:
   advertiseAddress: 10.0.1.1
   bindPort: 6443
 ---
-apiVersion: kubeadm.k8s.io/v1alpha3
+apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 certificatesDir: /etc/kubernetes/pki
-apiServerCertSANs:
+apiServer:
+  certSANs:
   - <PUBLIC_IP_KUBE1>
 etcd:
   external:
@@ -329,7 +330,7 @@ failSwapOn: false
 Then we run the following command on kube1:
 
 ```sh
-kubeadm init --config /tmp/master-configuration.yml
+kubeadm init --config /tmp/master-configuration.yml --ignore-preflight-errors=Swap,NumCPU
 ```
 After the setup is complete, kubeadm prints a token such as `818d5a.8b50eb5477ba4f40`. It's important to write it down, we'll need it in a minute to join the other cluster nodes.
 
@@ -389,7 +390,9 @@ systemctl enable overlay-route.service
 All that's left is to join the cluster with the other nodes. Run the following command on each host:
 
 ```sh
-kubeadm join --token=<TOKEN> 10.0.1.1:6443 --discovery-token-unsafe-skip-ca-verification
+kubeadm join --token=<TOKEN> 10.0.1.1:6443 \
+  --discovery-token-unsafe-skip-ca-verification \
+  --ignore-preflight-errors=Swap
 ```
 
 That's it, a Kubernetes cluster is ready at our disposal.
@@ -415,9 +418,9 @@ You're now able to remotely access the Kubernetes API. Running `kubectl get node
 
 ```sh
 NAME    STATUS   ROLES    AGE   VERSION
-kube1   Ready    master   38m   v1.13.4
-kube2   Ready    <none>   38m   v1.13.4
-kube3   Ready    <none>   38m   v1.13.4
+kube1   Ready    master   38m   v1.14.0
+kube2   Ready    <none>   38m   v1.14.0
+kube3   Ready    <none>   38m   v1.14.0
 ```
 
 ### Role-Based Access Control
