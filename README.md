@@ -657,7 +657,7 @@ Make sure to edit the cluster manifest as shown below and choose the right confi
     #   journalSizeMB: 1024
 ```
 
-Apply the storage manifests in the following order:
+As mentioned earlier, Rook is using [Ceph](https://ceph.com) under the hood. Run `apt-get install ceph-common` on each host to install the Ceph common utilities. Afterwards, apply the storage manifests in the following order:
 
 - [storage/00-namespace.yml](https://github.com/hobby-kube/manifests/blob/master/storage/00-namespace.yml)
 - [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the `rook-agent` pods to be deployed `kubectl -n rook get pods` before continuing)
