@@ -1,12 +1,12 @@
 # Kubernetes clusters for the hobbyist
 
-> The tinkerers of today are the leaders of tomorrow.
-
 This guide answers the question of how to setup and operate a fully functional, secure Kubernetes cluster on a cloud provider such as Hetzner Cloud, DigitalOcean or Scaleway. It explains how to overcome the lack of external ingress controllers, fully isolated secure private networking and persistent distributed block storage.
 
 Be aware, that the following sections might be opinionated. Kubernetes is an evolving, fast paced environment, which means this guide will probably be outdated at times, depending on the author's spare time and individual contributions. Due to this fact contributions are highly appreciated.
 
 This guide is accompanied by a fully automated cluster setup solution in the shape of well structured, modular [Terraform](https://www.terraform.io/) recipes. Links to contextually related modules are spread throughout the guide, visually highlighted using the ![Terraform](assets/terraform.png) Terraform icon.
+
+If you find this project helpful, please consider supporting its future development on [patreon.com/pstadler](https://www.patreon.com/pstadler).
 
 ## Table of Contents
 
