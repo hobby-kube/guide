@@ -338,11 +338,12 @@ Kubernetes is built around openness, so it's up to us to choose and install a su
 
 ```sh
 # create symlink for the current user in order to gain access to the API server with kubectl
+# or alternatively tell kubectl to use this file: export KUBECONFIG=/etc/kubernetes/admin.conf
 [ -d $HOME/.kube ] || mkdir -p $HOME/.kube
 ln -s /etc/kubernetes/admin.conf $HOME/.kube/config
 
 # install Weave Net
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version --short=true | grep Server | cut -d "v" -f 3 | cut -d "." -f 1-2)"
 
 # allow traffic on the newly created weave network interface
 ufw allow in on weave
