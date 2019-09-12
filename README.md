@@ -534,7 +534,7 @@ Additionally, it might be a good idea to assign a subdomain to each host, e.g. k
 
 Thanks to [Let’s Encrypt](https://letsencrypt.org/) and a project called [cert-manager](https://github.com/jetstack/cert-manager) it's incredibly easy to obtain free certificates for any domain name pointing at our Kubernetes cluster. Setting this service up takes no time and it plays well with the NGINX ingress controller we deployed earlier. These are the related manifests:
 
-- [ingress/tls/cert-manager-resources.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/cert-manager-resources.yml)
+- [ingress/tls/00-cert-manager-crds.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/00-cert-manager-crds.yml)
 - [ingress/tls/cert-manager.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/cert-manager.yml)
 
 Before deploying cert-manager using the manifests above, make sure to replace the email address in `ingress/tls/cert-manager.yml` with your own.
