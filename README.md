@@ -418,9 +418,9 @@ You're now able to remotely access the Kubernetes API. Running `kubectl get node
 
 ```sh
 NAME    STATUS   ROLES    AGE   VERSION
-kube1   Ready    master   38m   v1.14.0
-kube2   Ready    <none>   38m   v1.14.0
-kube3   Ready    <none>   38m   v1.14.0
+kube1   Ready    master   33m   v1.16.0
+kube2   Ready    <none>   33m   v1.16.0
+kube3   Ready    <none>   33m   v1.16.0
 ```
 
 ### Role-Based Access Control
@@ -660,7 +660,7 @@ Make sure to edit the cluster manifest as shown below and choose the right confi
 As mentioned earlier, Rook is using [Ceph](https://ceph.com) under the hood. Run `apt-get install ceph-common` on each host to install the Ceph common utilities. Afterwards, apply the storage manifests in the following order:
 
 - [storage/00-namespace.yml](https://github.com/hobby-kube/manifests/blob/master/storage/00-namespace.yml)
-- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the `rook-agent` pods to be deployed `kubectl -n rook get pods` before continuing)
+- [storage/operator.yml](https://github.com/hobby-kube/manifests/blob/master/storage/operator.yml) (wait for the rook-ceph-mon pods to be deployed `kubectl -n rook get pods` before continuing)
 - [storage/cluster.yml](https://github.com/hobby-kube/manifests/blob/master/storage/cluster.yml)
 - [storage/storageclass.yml](https://github.com/hobby-kube/manifests/blob/master/storage/storageclass.yml)
 - [storage/tools.yml](https://github.com/hobby-kube/manifests/blob/master/storage/tools.yml)
@@ -669,12 +669,13 @@ It's worth mentioning that the storageclass manifest contains the configuration 
 
 ```yaml
 # storage/storageclass.yml
-apiVersion: rook.io/v1alpha1
-kind: Pool
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
 metadata:
   name: replicapool
   namespace: rook
 spec:
+  failureDomain: host
   replicated:
     size: 2 # replication factor
 ---
