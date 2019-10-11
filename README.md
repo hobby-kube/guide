@@ -632,7 +632,7 @@ Rook and Portworx both shine with a simple setup and transparent operations. Roo
 
 As we run only a three node cluster, we're going to deploy Rook on all three of them by adding a master toleration to the Rook cluster definition.
 
-Before deploying Rook we need to either provide a raw, unformatted block device or specify a directory that will be used for storage on each host. On Scaleway, the volume on which the operating system is installed is called `/dev/vda`. Attaching another volume will be available as  `/dev/vdb`. On DigitalOcean things work a little differently. Attached volumes are referenced with something like  `/dev/disk/by-id/scsi-0DO_Volume_<VOLUME_NAME>`.
+Before deploying Rook we need to either provide a raw, unformatted block device or specify a directory that will be used for storage on each host. On a typical Ubuntu installation, the volume on which the operating system is installed is called `/dev/vda`. Attaching another volume will be available as  `/dev/vdb`.
 
 Make sure to edit the cluster manifest as shown below and choose the right configuration depending on whether you want to use a directory or a block device available in your environment for storage:
 
@@ -642,19 +642,14 @@ Make sure to edit the cluster manifest as shown below and choose the right confi
   storage:
     useAllNodes: true
     useAllDevices: false
-    # Uncomment the following lines and replace it with the name of block device used for storage:
-    # deviceFilter: vdb
-    # storeType: bluestore
-    #   databaseSizeMB: 1024
-    #   journalSizeMB: 1024
-    #
+    storeConfig:
+      databaseSizeMB: 1024
+      journalSizeMB: 1024
+    # Uncomment the following line and replace it with the name of block device used for storage:
+    #deviceFilter: vdb
     # Uncomment the following lines when using a directory for storage:
-    # directories:
-    # - path: /storage/data
-    # storeConfig:
-    #   storeType: filestore
-    #   databaseSizeMB: 1024
-    #   journalSizeMB: 1024
+    #directories:
+    #- path: /storage/data
 ```
 
 As mentioned earlier, Rook is using [Ceph](https://ceph.com) under the hood. Run `apt-get install ceph-common` on each host to install the Ceph common utilities. Afterwards, apply the storage manifests in the following order:
