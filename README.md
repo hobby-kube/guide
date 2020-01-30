@@ -6,7 +6,7 @@ Be aware, that the following sections might be opinionated. Kubernetes is an evo
 
 This guide is accompanied by a fully automated cluster setup solution in the shape of well structured, modular [Terraform](https://www.terraform.io/) recipes. Links to contextually related modules are spread throughout the guide, visually highlighted using the ![Terraform](assets/terraform.png) Terraform icon.
 
-If you find this project helpful, please consider supporting its future development on [GitHub Sponsors](https://github.com/users/pstadler/sponsorship).
+If you find this project helpful, please consider supporting its future development on [GitHub Sponsors](https://github.com/users/pstadler/sponsorship). You can also get a great quality T-shirt [here](https://cottonbureau.com/products/hobby-kube).
 
 ## Table of Contents
 
