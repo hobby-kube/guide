@@ -118,7 +118,8 @@ A project called [WireGuard](https://www.WireGuard.io/) supplies the best of bot
 
 As mentioned above, WireGuard runs as a Kernel module and needs to be compiled against the headers of the Kernel running on the host. In most cases it's enough to follow the simple instructions found here: [WireGuard Installation](https://www.WireGuard.io/install/), and install the other required packages
 
-```apt install wireguard-dkms wireguard-tools linux-headers-$(uname -r)
+```sh
+apt install wireguard-dkms wireguard-tools linux-headers-$(uname -r)
 ```
 
 Scaleway uses custom Kernel versions which makes the installation process a little more complex. Fortunately, they provide a [shell script](https://github.com/scaleway/kernel-tools#how-to-build-a-custom-kernel-module) to download the required headers without much hassle.
