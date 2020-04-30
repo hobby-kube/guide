@@ -58,7 +58,7 @@ For a Kubernetes cluster to be resilient it's recommended that it consists of **
 ![Terraform](assets/terraform.png) [`provider/digitalocean`](https://github.com/hobby-kube/provisioning/tree/master/provider/digitalocean)
 ![Terraform](assets/terraform.png) [`provider/scaleway`](https://github.com/hobby-kube/provisioning/tree/master/provider/scaleway)
 
-At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offer at this time is definitely [Hetzner Cloud](https://www.hetzner.com/cloud) where one gets a suitable three node cluster up and running for **a little less than €7.50/month** (3x2GB), followed by [Scaleway](https://www.scaleway.com/) starting from just below €10 (3x2GB). Both Hetzner and Scaleway currently only operate data centers located in Europe.
+At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offers at this time are definitely from [Hetzner Cloud](https://www.hetzner.com/cloud) and [Scaleway](https://www.scaleway.com/), where one gets a suitable three node cluster up and running for **around €9/month** (3x2GB). Both Hetzner and Scaleway currently only operate data centers located in Europe.
 
 [DigitalOcean](https://www.digitalocean.com/) is known for their great support and having data centers around the globe which is definitely a plus. A three node cluster will cost $15/month (3x1GB).
 
