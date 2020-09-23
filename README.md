@@ -118,15 +118,13 @@ A project called [WireGuard](https://www.WireGuard.io/) supplies the best of bot
 
 ![Terraform](assets/terraform.png) [`security/wireguard`](https://github.com/hobby-kube/provisioning/tree/master/security/wireguard)
 
-As mentioned above, WireGuard runs as a Kernel module and needs to be compiled against the headers of the Kernel running on the host. In most cases it's enough to follow the simple instructions found here: [WireGuard Installation](https://www.WireGuard.io/install/), and install the other required packages
+Let's start off by installing WireGuard. Follow the instructions found here: [WireGuard Installation](https://www.wireguard.com/install/).
 
 ```sh
-apt install wireguard-dkms wireguard-tools linux-headers-$(uname -r)
+apt install wireguard
 ```
 
-Scaleway uses custom Kernel versions which makes the installation process a little more complex. Fortunately, they provide a [shell script](https://github.com/scaleway/kernel-tools#how-to-build-a-custom-kernel-module) to download the required headers without much hassle.
-
-Once WireGuard has been compiled, it's time to create the configuration files. Each host should connect to its peers to create a secure network overlay via a tunnel interface called wg0. Let's assume the setup consists of three hosts and each one will get a new VPN IP address in the 10.0.1.1/24 range:
+Once WireGuard has been installed, it's time to create the configuration files. Each host should connect to its peers to create a secure network overlay via a tunnel interface called wg0. Let's assume the setup consists of three hosts and each one will get a new VPN IP address in the 10.0.1.1/24 range:
 
 | Host  | Private IP address  (ethN) | VPN IP address (wg0) |
 | ----- | -------------------------- | -------------------- |
@@ -309,13 +307,13 @@ Before initializing the master node, we need to create a manifest on kube1 which
 
 ```yaml
 # /tmp/master-configuration.yml
-apiVersion: kubeadm.k8s.io/v1beta1
+apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
 localAPIEndpoint:
   advertiseAddress: 10.0.1.1
   bindPort: 6443
 ---
-apiVersion: kubeadm.k8s.io/v1beta1
+apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 certificatesDir: /etc/kubernetes/pki
 apiServer:
@@ -328,7 +326,7 @@ etcd:
       - http://10.0.1.2:2379
       - http://10.0.1.3:2379
 ---
-apiVersion: kubelet.config.k8s.io/v1beta1
+apiVersion: kubelet.config.k8s.io/v1beta2
 kind: KubeletConfiguration
 failSwapOn: false
 ```
@@ -424,9 +422,9 @@ You're now able to remotely access the Kubernetes API. Running `kubectl get node
 
 ```sh
 NAME    STATUS   ROLES    AGE   VERSION
-kube1   Ready    master   33m   v1.16.0
-kube2   Ready    <none>   33m   v1.16.0
-kube3   Ready    <none>   33m   v1.16.0
+kube1   Ready    master   40m   v1.19.2
+kube2   Ready    <none>   39m   v1.19.2
+kube3   Ready    <none>   39m   v1.19.2
 ```
 
 ### Role-Based Access Control
