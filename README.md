@@ -421,10 +421,10 @@ kubectl config set-cluster kubernetes --server=https://<PUBLIC_IP_KUBE1>:6443
 You're now able to remotely access the Kubernetes API. Running `kubectl get nodes` should show a list of nodes similar to this:
 
 ```sh
-NAME    STATUS   ROLES    AGE   VERSION
-kube1   Ready    master   40m   v1.19.2
-kube2   Ready    <none>   39m   v1.19.2
-kube3   Ready    <none>   39m   v1.19.2
+NAME    STATUS   ROLES                  AGE     VERSION
+kube1   Ready    control-plane,master   5h11m   v1.21.1
+kube2   Ready    <none>                 5h11m   v1.21.1
+kube3   Ready    <none>                 5h11m   v1.21.1
 ```
 
 ### Role-Based Access Control
@@ -538,10 +538,10 @@ Additionally, it might be a good idea to assign a subdomain to each host, e.g. k
 
 Thanks to [Let’s Encrypt](https://letsencrypt.org/) and a project called [cert-manager](https://github.com/jetstack/cert-manager) it's incredibly easy to obtain free certificates for any domain name pointing at our Kubernetes cluster. Setting this service up takes no time and it plays well with the NGINX ingress controller we deployed earlier. These are the related manifests:
 
-- [ingress/tls/00-cert-manager-crds.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/00-cert-manager-crds.yml)
-- [ingress/tls/cert-manager.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/cert-manager.yml)
+- [ingress/tls/00-cert-manager.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/00-cert-manager.yml)
+- [ingress/tls/cert-issuer.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/tls/cert-issuer.yml)
 
-Before deploying cert-manager using the manifests above, make sure to replace the email address in `ingress/tls/cert-manager.yml` with your own.
+Before deploying cert-manager using the manifests above, make sure to replace the email address in `ingress/tls/cert-issuer.yml` with your own.
 
 To enable certificates for a service, the ingress manifest needs to be slightly extended:
 
