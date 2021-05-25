@@ -511,7 +511,7 @@ spec:
       - path: /
         backend:
           serviceName: example-service
-          servicePort: example-service-http
+          servicePort: http
 ```
 
 The NGINX ingress controller is quite flexible and supports a whole bunch of [configuration options](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/).
@@ -565,7 +565,7 @@ spec:
       - path: /
         backend:
           serviceName: example-service
-          servicePort: example-service-http
+          servicePort: http
 ```
 
 After applying this manifest, cert-manager will try to obtain a certificate for service.example.com and reload the NGINX configuration to enable TLS. Make sure to check the logs of the cert-manager pod if something goes wrong.
