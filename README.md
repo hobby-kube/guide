@@ -326,7 +326,7 @@ etcd:
       - http://10.0.1.2:2379
       - http://10.0.1.3:2379
 ---
-apiVersion: kubelet.config.k8s.io/v1beta2
+apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 failSwapOn: false
 ```
