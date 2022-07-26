@@ -1,6 +1,6 @@
 # Kubernetes clusters for the hobbyist
 
-This guide answers the question of how to setup and operate a fully functional, secure Kubernetes cluster on a cloud provider such as Hetzner Cloud, DigitalOcean or Scaleway. It explains how to overcome the lack of external ingress controllers, fully isolated secure private networking and persistent distributed block storage.
+This guide answers the question of how to setup and operate a fully functional, secure Kubernetes cluster on a cloud provider such as Hetzner Cloud, DigitalOcean, or Scaleway. It explains how to overcome the lack of external ingress controllers, fully isolated secure private networking, and persistent distributed block storage.
 
 Be aware, that the following sections might be opinionated. Kubernetes is an evolving, fast paced environment, which means this guide will probably be outdated at times, depending on the author's spare time and individual contributions. Due to this fact contributions are highly appreciated.
 
@@ -46,11 +46,11 @@ If you find this project helpful, please consider supporting its future developm
 
 ## Cluster size
 
-The professional hobbyist cluster operators aim for resilience—a system's ability to withstand and recover from failure. On the other hand, they usually have a limited amount of funds they can or want to spend on a basic cluster. It's therefore crucial to find a good balance between resilience and cost.
+The professional hobbyist cluster operators aim for resilience—a system's ability to withstand and recover from failure. On the other hand, they usually have a limited amount of funds they can or want to spend on a basic cluster. It's, therefore, crucial to find a good balance between resilience and cost.
 
-After experimenting with various setups and configurations a good reference point is, that a basic cluster can be operated on as little as two virtual hosts with 1GB memory each. At this point it's worth mentioning that Kubernetes does not include *swap memory* in its calculations and will evict pods pretty brutally when reaching memory limits ([reference](https://github.com/kubernetes/kubernetes/issues/7294)). As opposed to memory, raw CPU power doesn't matter that much, although it should be clear that the next Facebook won't be running on two virtual CPU cores.
+After experimenting with various setups and configurations a good reference point is, that a basic cluster can be operated on as little as two virtual hosts with 1GB of memory each. At this point, it's worth mentioning that Kubernetes does not include *swap memory* in its calculations and will evict pods pretty brutally when reaching memory limits ([reference](https://github.com/kubernetes/kubernetes/issues/7294)). As opposed to memory, raw CPU power doesn't matter that much, although it should be clear that the next Facebook won't be running on two virtual CPU cores.
 
-For a Kubernetes cluster to be resilient it's recommended that it consists of **at least three hosts**. The main reason behind this is that *etcd*, which itself is an essential part of any Kubernetes setup, is only fault tolerant with a minimum of three cluster members ([reference](https://coreos.com/etcd/docs/latest/v2/admin_guide.html#optimal-cluster-size)).
+For a Kubernetes cluster to be resilient it's recommended that it consists of **at least three hosts**. The main reason behind this is that *etcd*, which itself is an essential part of any Kubernetes setup, is only faulted tolerant with a minimum of three cluster members ([reference](https://coreos.com/etcd/docs/latest/v2/admin_guide.html#optimal-cluster-size)).
 
 ## Choosing a cloud provider
 
@@ -58,13 +58,13 @@ For a Kubernetes cluster to be resilient it's recommended that it consists of **
 ![Terraform](assets/terraform.png) [`provider/digitalocean`](https://github.com/hobby-kube/provisioning/tree/master/provider/digitalocean)
 ![Terraform](assets/terraform.png) [`provider/scaleway`](https://github.com/hobby-kube/provisioning/tree/master/provider/scaleway)
 
-At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offer at this time is definitely from [Hetzner Cloud](https://hetzner.cloud/?ref=osR7dA9R4bmz) (referral link, get €20), where one gets a suitable three node cluster up and running for **around €9/month** (3x2GB). Hetzner currently only operate data centers located in Europe.
+At this point, it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing, and data center location. The very best offer at this time is definitely from [Hetzner Cloud](https://hetzner.cloud/?ref=osR7dA9R4bmz) (referral link, get €20), where one gets a suitable three node cluster up and running for **around €9/month** (3x2GB). Hetzner currently only operates data centers located in Europe.
 
-[DigitalOcean](https://m.do.co/c/8bd7e234cf6c) (referral link, get $100) is known for their great support and having data centers around the globe which is definitely a plus. A three node cluster will cost $15/month (3x1GB).
+[DigitalOcean](https://m.do.co/c/8bd7e234cf6c) (referral link, get $100) is known for its great support and has data centers around the globe which is definitely a plus. A three node cluster will cost $15/month (3x1GB).
 
 [Scaleway](https://www.scaleway.com/)'s instances start at €4.99 (previously €2.99). A three node cluster will cost around €15/month (3x2GB).
 
-[Linode](https://www.linode.com/), [Vultr](https://www.vultr.com/) and a couple of other providers with similar offers are other viable options. While they all have their advantages and disadvantages, they should be perfectly fine for hosting a Kubernetes cluster.
+[Linode](https://www.linode.com/), [Vultr](https://www.vultr.com/), and a couple of other providers with similar offers are other viable options. While they all have their advantages and disadvantages, they should be perfectly fine for hosting a Kubernetes cluster.
 
 ## Choosing an operating system
 
@@ -78,7 +78,7 @@ That being said, feel free to use any Linux distribution you like. Just be aware
 
 > Securing hosts on both public and private interfaces is an absolute necessity.
 
-This is a tough one. Almost every single guide fails to bring the security topic to the table to the extent it deserves. **One of the biggest misconceptions is that private networks are secure**, but private does not mean secure. In fact, private networks are more often than not shared between many customers in the same data center. This might not be the case with all providers. It's generally good advise to gain absolute certainty, what the actual conditions of a *private* network are.
+This is a tough one. Almost every single guide fails to bring the security topic to the table to the extent it deserves. **One of the biggest misconceptions is that private networks are secure** but private does not mean secure. In fact, private networks are more often than not shared between many customers in the same data center. This might not be the case with all providers. It's generally good advice to gain absolute certainty about what the actual conditions of a *private* network are.
 
 ### Firewall
 
@@ -101,7 +101,7 @@ This ruleset will get slightly expanded in the upcoming sections.
 
 ### Secure private networking
 
-Kubernetes cluster members constantly exchange data with each other. A secure network overlay between hosts is not only the simplest, but also the most secure solution for making sure that a third party occupying the same network as our hosts won't be able to eavesdrop on their private traffic. It's a tedious job to secure every single service, as this task usually requires creating and distributing certificates across hosts, managing secrets in one way or another and, last but not least, configuring services to actually use encrypted means of communication. That's why setting up a network overlay using VPN—which itself is a one-time effort requiring very little know how, and which naturally ensures secure inter-host communication for every possible service running now and in the future—is simply the best solution to address this problem.
+Kubernetes cluster members constantly exchange data with each other. A secure network overlay between hosts is not only the simplest but also the most secure solution for making sure that a third party occupying the same network as our hosts won't be able to eavesdrop on their private traffic. It's a tedious job to secure every single service, as this task usually requires creating and distributing certificates across hosts, managing secrets in one way or another and, last but not least, configuring services to actually use encrypted means of communication. That's why setting up a network overlay using VPN—which itself is a one-time effort requiring very little know how, and which naturally ensures secure inter-host communication for every possible service running now and in the future—is simply the best solution to address this problem.
 
 When talking about VPN, there are generally two types of solutions:
 
@@ -112,7 +112,7 @@ VPN software running in userland has in general a huge negative impact on networ
 
 > Complexity is security's worst contender.
 
-A project called [WireGuard](https://www.WireGuard.io/) supplies the best of both worlds at this point. Running as a Kernel module, it not only offers excellent performance, but is dead simple to set up and provides a tunnel interface out of the box. It may be disputed whether running VPN within the Kernel is a good idea, but then again alternatives running in userland such as [tinc](https://www.tinc-vpn.org/) or [fastd](https://projects.universe-factory.net/projects/fastd/wiki) aren't necessarily more secure. However, they are an order of magnitude slower and typically harder to configure.
+A project called [WireGuard](https://www.WireGuard.io/) supplies the best of both worlds at this point. Running as a Kernel module, it not only offers excellent performance but is dead simple to set up and provides a tunnel interface out of the box. It may be disputed whether running VPN within the Kernel is a good idea, but then again alternatives running in userland such as [tinc](https://www.tinc-vpn.org/) or [fastd](https://projects.universe-factory.net/projects/fastd/wiki) aren't necessarily more secure. However, they are an order of magnitude slower and typically harder to configure.
 
 ### WireGuard setup
 
