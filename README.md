@@ -346,7 +346,7 @@ Kubernetes is built around openness, so it's up to us to choose and install a su
 ln -s /etc/kubernetes/admin.conf $HOME/.kube/config
 
 # install Weave Net
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 
 # allow traffic on the newly created weave network interface
 ufw allow in on weave
