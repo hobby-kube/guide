@@ -13,7 +13,6 @@ If you find this project helpful, please consider supporting its future developm
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [Cluster size](#cluster-size)
 - [Choosing a cloud provider](#choosing-a-cloud-provider)
 - [Choosing an operating system](#choosing-an-operating-system)
@@ -22,7 +21,7 @@ If you find this project helpful, please consider supporting its future developm
   - [Secure private networking](#secure-private-networking)
   - [WireGuard setup](#wireguard-setup)
 - [Installing Kubernetes](#installing-kubernetes)
-  - [Docker setup](#docker-setup)
+  - [Containerd setup](#containerd-setup)
   - [Etcd setup](#etcd-setup)
   - [Kubernetes setup](#kubernetes-setup)
     - [Initializing the master node](#initializing-the-master-node)
@@ -177,10 +176,15 @@ ufw allow in on wg0
 ufw reload
 ```
 
-Before starting WireGuard we need to make sure that ip forwarding is enabled. Executing `sysctl net.ipv4.ip_forward` should show `net.ipv4.ip_forward = 1`. If this is not the case, run the following commands:
+Before starting WireGuard we need to make sure that ip forwarding and a few other required network settings are enabled:
 
 ```sh
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf # enable ip4 forwarding
+echo br_netfilter > /etc/modules-load.d/kubernetes.conf
+modprobe br_netfilter
+
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+echo "net.bridge.bridge-nf-call-iptables=1" >> /etc/sysctl.conf
+
 sysctl -p # apply settings from /etc/sysctl.conf
 ```
 
@@ -216,20 +220,32 @@ Last but not least, run `systemctl enable wg-quick@wg0` to launch the service wh
 
 There are plenty of ways to set up a Kubernetes cluster from scratch. At this point however, we settle on [kubeadm](https://kubernetes.io/docs/getting-started-guides/kubeadm/). This dramatically simplifies the setup process by automating the creation of certificates, services and configuration files.
 
-Before getting started with Kubernetes itself, we need to take care of setting up two essential services that are not part of the actual stack, namely **Docker** and **etcd**.
+Before getting started with Kubernetes itself, we need to take care of setting up two essential services that are not part of the actual stack, namely **containerd** and **etcd**. We've been using Docker in the past, but containerd is now preferred.
 
-### Docker setup
+### Containerd setup
 
-Docker is directly available from the package registries of most Linux distributions. Hints regarding supported versions are available in [the official kubeadm guide](https://kubernetes.io/docs/setup/independent/install-kubeadm/). Simply use your preferred way of installation. Running `apt-get install docker.io` on Ubuntu will install a stable version, although not the most recent one, but this is perfectly fine in our case.
-
-Kubernetes recommends running Docker with Iptables and IP Masq disabled. The easiest way to achieve this is by creating a systemd unit file to set the required configuration flags:
+[containerd](https://containerd.io/) is robust container runtime. Hints regarding supported versions are available in [the official container runtimes guide](https://kubernetes.io/docs/setup/production-environment/container-runtimes/). Let's install a supported containerd version:
 
 ```sh
-# /etc/systemd/system/docker.service.d/10-docker-opts.conf
-Environment="DOCKER_OPTS=--iptables=false --ip-masq=false"
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmour -o /etc/apt/keyrings/docker.gpg
+echo "deb [signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+  > /etc/apt/sources.list.d/docker.list
+
+apt-get install -y containerd.io=1.6.15-1 # Kubernetes 1.26 requires at least containerd v1.6
 ```
 
-If this file has been placed after Docker was installed, make sure to restart the service using `systemctl restart docker`.
+Kubernetes recommends running containerd with the cgroup driver. This can be done by creating a containerd config file and setting the required configuration flag:
+
+```sh
+# write default containerd config
+containerd config default > /etc/containerd/config.toml
+# set systemd cgroup flag to true
+sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+
+# enable containerd and restart
+systemctl enable containerd
+systemctl restart containerd
+```
 
 ### Etcd setup
 
@@ -240,7 +256,7 @@ If this file has been placed after Docker was installed, make sure to restart th
 Even though etcd is generally available with most package managers, it's recommended to manually install a more recent version:
 
 ```sh
-export ETCD_VERSION="v3.3.12"
+export ETCD_VERSION="v3.5.6"
 mkdir -p /opt/etcd
 curl -L https://storage.googleapis.com/etcd/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz \
   -o /opt/etcd-${ETCD_VERSION}-linux-amd64.tar.gz
@@ -290,15 +306,21 @@ Executing `/opt/etcd/etcdctl member list` should show a list of cluster members.
 
 ### Kubernetes setup
 
-Now that Docker is configured and etcd is running, it's time to deploy Kubernetes. The first step is to install the required packages on each host:
+Now that containerd is configured and etcd is running, it's time to deploy Kubernetes. The first step is to install the required packages on each host:
 
 ```sh
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-cat <<EOF > /etc/apt/sources.list.d/kubernetes.list
-deb http://apt.kubernetes.io/ kubernetes-xenial-unstable main
-EOF
+# https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
+# (`xenial` is correct even for newer Ubuntu versions)
+curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" \
+  > /etc/apt/sources.list.d/kubernetes.list
+
 apt-get update
-apt-get install -y kubelet kubeadm kubectl kubernetes-cni
+
+apt-get install -y kubelet=1.26.0-00 kubeadm=1.26.0-00 kubectl=1.26.0-00 # kubernetes-cni package comes as dependency of the others
+# Pin Kubernetes major version since there are breaking changes between releases.
+# For example, Kubernetes 1.26 requires a newer containerd (https://kubernetes.io/blog/2022/11/18/upcoming-changes-in-kubernetes-1-26/#cri-api-removal).
+apt-mark hold kubelet kubeadm kubectl kubernetes-cni
 ```
 
 #### Initializing the master node
@@ -395,7 +417,7 @@ systemctl enable overlay-route.service
 All that's left is to join the cluster with the other nodes. Run the following command on each host:
 
 ```sh
-kubeadm join --token=<TOKEN> 10.0.1.1:6443 \
+kubeadm join --token="<TOKEN>" 10.0.1.1:6443 \
   --discovery-token-unsafe-skip-ca-verification \
   --ignore-preflight-errors=Swap
 ```
