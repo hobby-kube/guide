@@ -492,17 +492,17 @@ We already opened port 80 and 443 during the initial firewall configuration, now
 - [ingress/service.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/service.yml)
 - [ingress/configmap.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/configmap.yml)
 
-One part requires special attention. In order to make sure NGINX runs on kube1—which is a tainted master node and no pods will normally be scheduled on it—we need to specify a toleration:
+One part requires special attention. In order to make sure NGINX runs on kube1—which is a tainted control-plane node and no pods will normally be scheduled on it—we need to specify a toleration:
 
 ```yaml
 # from ingress/deployment.yml
 tolerations:
-- key: node-role.kubernetes.io/master
+- key: node-role.kubernetes.io/control-plane
   operator: Equal
   effect: NoSchedule
 ```
 
-Specifying a toleration doesn't make sure that a pod is getting scheduled on any specific node. For this we need to add a node affinity rule. As we have just a single master node, the following specification is enough to schedule a pod on kube1:
+Specifying a toleration doesn't make sure that a pod is getting scheduled on any specific node. For this we need to add a node affinity rule. As we have just a single control-plane node, the following specification is enough to schedule a pod on kube1:
 
 ```yaml
 # from ingress/deployment.yml
@@ -511,7 +511,7 @@ affinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: node-role.kubernetes.io/master
+        - key: node-role.kubernetes.io/control-plane
           operator: Exists
 ```
 
@@ -657,7 +657,7 @@ Rook and Portworx both shine with a simple setup and transparent operations. Roo
 
 ### Deploying Rook
 
-As we run only a three node cluster, we're going to deploy Rook on all three of them by adding a master toleration to the Rook cluster definition.
+As we run only a three node cluster, we're going to deploy Rook on all three of them by adding a control-plane toleration to the Rook cluster definition.
 
 Before deploying Rook we need to either provide a raw, unformatted block device or specify a directory that will be used for storage on each host. On a typical Ubuntu installation, the volume on which the operating system is installed is called `/dev/vda`. Attaching another volume will be available as  `/dev/vdb`.
 
