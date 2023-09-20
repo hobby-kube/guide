@@ -489,7 +489,6 @@ We already opened port 80 and 443 during the initial firewall configuration, now
 
 - [ingress/00-namespace.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/00-namespace.yml)
 - [ingress/deployment.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/deployment.yml)
-- [ingress/service.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/service.yml)
 - [ingress/configmap.yml](https://github.com/hobby-kube/manifests/blob/master/ingress/configmap.yml)
 
 One part requires special attention. In order to make sure NGINX runs on kube1—which is a tainted control-plane node and no pods will normally be scheduled on it—we need to specify a toleration:
@@ -520,13 +519,12 @@ Running `kubectl apply -f ingress/` will apply all manifests in this folder. Fir
 Services are now able to make use of the ingress controller and receive public traffic with a simple manifest:
 
 ```yaml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
 spec:
+  ingressClassName: "nginx"
   rules:
   - host: service.example.com
     http:
@@ -569,14 +567,14 @@ Before deploying cert-manager using the manifests above, make sure to replace th
 To enable certificates for a service, the ingress manifest needs to be slightly extended:
 
 ```yaml
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
   annotations:
-    kubernetes.io/tls-acme: "true" # enable certificates
-    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt" # enable certificates
 spec:
+  ingressClassName: "nginx"
   tls: # specify domains to fetch certificates for
   - hosts:
     - service.example.com
