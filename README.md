@@ -361,22 +361,29 @@ kubeadm init --config /tmp/master-configuration.yml --ignore-preflight-errors=Sw
 ```
 After the setup is complete, kubeadm prints a token such as `818d5a.8b50eb5477ba4f40`. It's important to write it down, we'll need it in a minute to join the other cluster nodes.
 
-Kubernetes is built around openness, so it's up to us to choose and install a suitable pod network. This is required as it enables pods running on different nodes to communicate with each other. One of the [many options](https://kubernetes.io/docs/concepts/cluster-administration/addons/) is [Weave Net](https://www.weave.works/products/weave-net/). It requires zero configuration and is considered stable and well-maintained:
+Kubernetes is built around openness, so it's up to us to choose and install a suitable pod network. This is required as it enables pods running on different nodes to communicate with each other. One of the [many options](https://kubernetes.io/docs/concepts/cluster-administration/addons/) is [Cilium](https://cilium.io/). It requires little configuration and is considered stable and well-maintained:
 
 ```sh
 # create symlink for the current user in order to gain access to the API server with kubectl
 [ -d $HOME/.kube ] || mkdir -p $HOME/.kube
 ln -s /etc/kubernetes/admin.conf $HOME/.kube/config
 
-# install Weave Net
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+# install Cilium
+CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+CLI_ARCH="$(arch | sed 's/x86_64/amd64/; s/aarch64/arm64/')"
+curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
+sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
+rm cilium-linux-${CLI_ARCH}.tar.gz*
 
-# allow traffic on the newly created weave network interface
-ufw allow in on weave
+cilium install --version 1.14.1 --set ipam.mode=cluster-pool --set ipam.operator.clusterPoolIPv4PodCIDRList=10.96.0.0/16
+
+# allow traffic on the newly created Cilium network interface
+ufw allow in on cilium_vxlan
 ufw reload
 ```
 
-Unfortunately, Weave Net will not readily work with our current cluster configuration because traffic will be routed via the wrong network interface. This can be fixed by running the following command on each host:
+Cilium will not readily work with our current cluster configuration because traffic will be routed via the wrong network interface. This can be fixed by running the following command on each host:
 
 ```sh
 ip route add 10.96.0.0/16 dev $VPN_INTERFACE src $VPN_IP
@@ -410,6 +417,12 @@ After that we have to enable it by running following command:
 
 ```sh
 systemctl enable overlay-route.service
+```
+
+Finally, we can check if everything works:
+
+```sh
+cilium status --wait
 ```
 
 #### Joining the cluster nodes
