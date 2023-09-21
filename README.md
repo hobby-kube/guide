@@ -57,13 +57,15 @@ For a Kubernetes cluster to be resilient it's recommended that it consists of **
 ![Terraform](assets/terraform.png) [`provider/digitalocean`](https://github.com/hobby-kube/provisioning/tree/master/provider/digitalocean)
 ![Terraform](assets/terraform.png) [`provider/scaleway`](https://github.com/hobby-kube/provisioning/tree/master/provider/scaleway)
 
-At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offer at this time is definitely from [Hetzner Cloud](https://hetzner.cloud/?ref=osR7dA9R4bmz) (referral link, get €20), where one gets a suitable three node cluster up and running for **around €9/month** (3x2GB). Hetzner currently only operate data centers located in Europe.
+At this point it's time to choose a cloud provider based on a few criteria such as trustworthiness, reliability, pricing and data center location. The very best offer at this time is definitely from [Hetzner Cloud](https://hetzner.cloud/?ref=osR7dA9R4bmz) (referral link, get €20), where one gets a suitable three node cluster up and running for **a little over €10/month** (3x2GB). Hetzner currently only operate data centers located in Europe.
 
-[DigitalOcean](https://m.do.co/c/8bd7e234cf6c) (referral link, get $100) is known for their great support and having data centers around the globe which is definitely a plus. A three node cluster will cost $15/month (3x1GB).
+[DigitalOcean](https://m.do.co/c/8bd7e234cf6c) (referral link, get $100) is known for their great support and having data centers around the globe which is definitely a plus. A three node cluster will cost $18/month (3x1GB).
 
-[Scaleway](https://www.scaleway.com/)'s instances start at €4.99 (previously €2.99). A three node cluster will cost around €15/month (3x2GB).
+[Scaleway](https://www.scaleway.com/)'s instances start at around €5. A three node cluster will cost around €15/month (3x1GB).
 
 [Linode](https://www.linode.com/), [Vultr](https://www.vultr.com/) and a couple of other providers with similar offers are other viable options. While they all have their advantages and disadvantages, they should be perfectly fine for hosting a Kubernetes cluster.
+
+While pricing for virtual private servers has generally increased in the past years, the rise of ARM64 based CPUs has opened doors for less expensive options. This guide results in a setup that can be operated on x86, as well as ARM64 based systems.
 
 ## Choosing an operating system
 
